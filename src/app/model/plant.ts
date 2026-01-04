@@ -1,0 +1,20 @@
+export interface Plant {
+    name: string,
+    image: string,
+    family: string,
+    damage: string | number,
+    damageDetails: string,
+    area: string,
+    range: string,
+    rangeDetails: string,
+    duration: string,
+    special: string,
+    weakness: string,
+    usage: string,
+    cost: string | number,
+    recharge: string | number,
+    toughness: string | number,
+    powerup: string,
+    sunProduction: string,
+    description: string
+}
