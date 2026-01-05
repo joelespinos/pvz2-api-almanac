@@ -3,19 +3,41 @@
     <img src="images/pvz2-api-logo.png" alt="PvZ 2 API Logo" class="w-[230px]">
     <button [routerLink]="['/zombies']">View Zombies</button>    
 </div>
-<h2>Catàlog de Plantes</h2>
-@for (plant of plantsAlmanac(); track $index) {
-    <div [routerLink]="[(plant.name)]" class="border-1">
-        <p>{{ plant.cost }}</p>
 
-        <div class="">
-            <img [src]="plant.image" [alt]="plant.name + ' Image'">
-        </div>
+<h2 class="text-2xl">Plants Almanac</h2>
 
-        <h3>{{ plant.name }}</h3>
+<!-- CERCADOR -->
+<input [(ngModel)]="plantNameSearch" placeholder="Search plant by name...">
 
-        <div class="">
-            <p>{{ plant.description }}</p>
-        </div>
-    </div>
+<!-- FILTRES -->
+<div class="[&_img]:w-[40px]">
+    @for (filter of familyFiltersList(); track $index) {
+        <button (click)="setFamilyFilter(filter.name)">
+            <img [src]="filter.imageIcon" [alt]="filter.name + ' Family'">
+        </button>
+    }
+</div>
+
+<!-- GRID DE CARDS -->
+@if (areAnyResultsInSearch()) {
+    @for (plant of plantsAlmanac(); track $index) {
+        @if (isPlantNameInSearch(plant.name)) {
+            
+            <div [routerLink]="[(plant.name)]" class="border-1">
+                <p>{{ plant.cost }}</p>
+                
+                <div class="">
+                    <img [src]="plant.image" [alt]="plant.name + ' Image'">
+                </div>
+                
+                <h3>{{ plant.name }}</h3>
+                
+                <div class="">
+                    <p>{{ plant.description }}</p>
+                </div>
+            </div>
+        }
+    }
+} @else {
+    <p>No results where found related to the search</p>
 }

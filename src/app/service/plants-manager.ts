@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
-import { effect, inject, Injectable, signal, Signal, WritableSignal } from '@angular/core';
+import { computed, effect, inject, Injectable, signal, Signal, WritableSignal } from '@angular/core';
 import { Plant } from '../model/plant';
+import { PlantFamilyFilter, PLANTS_FAMILY_FILTERS } from '../model/plant-family-filter';
 
 @Injectable({
   providedIn: 'root',
@@ -14,25 +15,40 @@ export class PlantsManager {
   private _httpClient: HttpClient = inject(HttpClient);
 
   private _plantsNames: WritableSignal<string[]>;
-  private _arePlantsNameLoaded: WritableSignal<boolean>;  // Booleà per controlar el moment en que la carrega de noms de plantes ha acabat
-  private _plantsAlmanac: WritableSignal<Plant[]>;        // Array que contindra tots els objectes Planta
-
+  private _arePlantsNameLoaded: WritableSignal<boolean>;          // Booleà per controlar el moment en que la carrega de noms de plantes ha acabat
+  private _plantsAlmanac: WritableSignal<Plant[]>;                // Array que contindra tots els objectes Planta
+  private _filteredPlantsAlmanac: Signal<Plant[]>;                // Llista filtrada d'acord amb els filtres actius
+  private _familyFilter: WritableSignal<string>;                  // Filtre per familia
+  private _familyFiltersList: WritableSignal<PlantFamilyFilter[]>;// Objectes de filtratge per familia
+  
+  // Getters publics
   public plantsAlmanac: Signal<Plant[]>;
+  public filteredPlantsAlmanac: Signal<Plant[]>;                  // Llista filtrada d'acord amb els filtres actius
+  public familyFiltersList: Signal<PlantFamilyFilter[]>;
 
   constructor() {
     this._plantsNames = signal<string[]>([]);
     this._arePlantsNameLoaded = signal<boolean>(false);
     this._plantsAlmanac = signal<Plant[]>([]);
+    this._familyFilter = signal<string>("");
+    this._familyFiltersList = signal<PlantFamilyFilter[]>(PLANTS_FAMILY_FILTERS);
+
+    // Computed de filtratge
+    this._filteredPlantsAlmanac = computed(() => {
+      return this._plantsAlmanac().filter(plant => plant.family.includes(this._familyFilter()));
+    });
     
     this.plantsAlmanac = this._plantsAlmanac.asReadonly();
+    this.filteredPlantsAlmanac = this._filteredPlantsAlmanac;
+    this.familyFiltersList = this._familyFiltersList.asReadonly();
     
     this.retrievePlantsNames(); // Obtenim el nom de totes les plantes
     
+    // Una vegada la carrega de noms hagi conclós crida a retrievePlantsObjects()
     effect(() => {
-      // Una vegada la carrega de noms hagi conclós crida a retrievePlantsObjects()
       if(this._arePlantsNameLoaded()) this.retrievePlantsObjects();
     });
-}
+  }
 
   private retrievePlantsNames(): void {
 
@@ -155,5 +171,19 @@ export class PlantsManager {
     let searchedPlant = this._plantsAlmanac().find(plant => plant.name == name);
     if (searchedPlant === undefined) searchedPlant = this.createDefaultPlant();
     return searchedPlant;
+  }
+
+  public isPlantNameInSearch(plantName: string, search: string): boolean {
+    return plantName.toUpperCase().includes(search.toUpperCase().trim());
+  }
+
+  public areAnyResultsInSearch(search: string): boolean {
+    let searchedPlant = this.filteredPlantsAlmanac().find(plant => plant.name.toUpperCase().includes(search.toUpperCase().trim()));
+    if (searchedPlant != undefined) return true;
+    else return false;
+  }
+
+  public setFamilyFilter(searchFamily: string): void {
+    this._familyFilter.set(searchFamily);
   }
 }
