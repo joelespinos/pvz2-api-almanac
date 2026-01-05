@@ -10,12 +10,14 @@ export class PlantsManager {
   private readonly PUBLIC_URL: string = "https://pvz-2-api.vercel.app"
   private readonly BASE_URL: string = "/api";
   private readonly PLANTS_ENDPOINT: string = "plants"
+  private readonly FIRST_ELEMENT: number = 0;   // Primer element de la llista de noms en el que començarem a fer peticions pels objectes
   private readonly DEFAULT_DESCRIPTION: string = "There's no description yet...";
   
   private _httpClient: HttpClient = inject(HttpClient);
 
   private _plantsNames: WritableSignal<string[]>;
   private _arePlantsNameLoaded: WritableSignal<boolean>;          // Booleà per controlar el moment en que la carrega de noms de plantes ha acabat
+  private _arePlantsObjectsLoaded: WritableSignal<boolean>;       // Booleà per controlar el moment en que la carrega de tots els objectes Plant de this._plantsAlmanac ha acabat
   private _plantsAlmanac: WritableSignal<Plant[]>;                // Array que contindra tots els objectes Planta
   private _filteredPlantsAlmanac: Signal<Plant[]>;                // Llista filtrada d'acord amb els filtres actius
   private _familyFilter: WritableSignal<string>;                  // Filtre per familia
@@ -25,10 +27,12 @@ export class PlantsManager {
   public plantsAlmanac: Signal<Plant[]>;
   public filteredPlantsAlmanac: Signal<Plant[]>;                  // Llista filtrada d'acord amb els filtres actius
   public familyFiltersList: Signal<PlantFamilyFilter[]>;
+  public arePlantsObjectsLoaded: Signal<boolean>;                 // Booleà per al Loading...
 
   constructor() {
     this._plantsNames = signal<string[]>([]);
     this._arePlantsNameLoaded = signal<boolean>(false);
+    this._arePlantsObjectsLoaded = signal<boolean>(false);
     this._plantsAlmanac = signal<Plant[]>([]);
     this._familyFilter = signal<string>("");
     this._familyFiltersList = signal<PlantFamilyFilter[]>(PLANTS_FAMILY_FILTERS);
@@ -38,15 +42,17 @@ export class PlantsManager {
       return this._plantsAlmanac().filter(plant => plant.family.includes(this._familyFilter()));
     });
     
+    // Getters publics
     this.plantsAlmanac = this._plantsAlmanac.asReadonly();
     this.filteredPlantsAlmanac = this._filteredPlantsAlmanac;
     this.familyFiltersList = this._familyFiltersList.asReadonly();
+    this.arePlantsObjectsLoaded = this._arePlantsObjectsLoaded.asReadonly();
     
-    this.retrievePlantsNames(); // Obtenim el nom de totes les plantes
+    this.retrievePlantsNames(); // Obtenim el nom de totes les plantes al carregar el service
     
     // Una vegada la carrega de noms hagi conclós crida a retrievePlantsObjects()
     effect(() => {
-      if(this._arePlantsNameLoaded()) this.retrievePlantsObjects();
+      if(this._arePlantsNameLoaded()) this.retrievePlantObject(this.FIRST_ELEMENT); // Iniciem la crida de peticions pel primer element
     });
   }
 
@@ -70,76 +76,78 @@ export class PlantsManager {
     });
   }
 
-  private retrievePlantsObjects(): void {
+  private retrievePlantObject(numElement: number): void {
+    let plantEndPoint = "/" + this._plantsNames()[numElement]; // Fragment de la URL que contindra el nom de la planta a obtenir el objecte
+    let subscription = this._httpClient.get<Plant>(this.BASE_URL + this.PLANTS_ENDPOINT + plantEndPoint).subscribe({
 
-    this._plantsNames().forEach((element) => {
-      let plantEndPoint = "/" + element;
-      let subscription = this._httpClient.get<Plant>(this.BASE_URL + this.PLANTS_ENDPOINT + plantEndPoint).subscribe({
-
-        next: (value: any) => {
-          let newPlant = this.createDefaultPlant(); // Planta a afegir
-          
-          newPlant.name = value.name;
-          newPlant.image = this.PUBLIC_URL + value.image;
-          
-          if (value.family !== undefined) newPlant.family = value.family;
-          else if (value.Family !== undefined) newPlant.family = value.Family;
-
-          if (value.description !== undefined) newPlant.description = value.description;
- 
-          if (value.damage !== undefined) newPlant.damage = value.damage;
-          else if (value.Damage !== undefined) newPlant.damage = value.Damage;
- 
-          if (value.recharge !== undefined) newPlant.recharge = value.recharge;
-          else if (value.Recharge !== undefined) newPlant.recharge = value.Recharge;
- 
-          if (value.cost !== undefined) newPlant.cost = value.cost;
-          else if (value["Sun cost"] !== undefined) newPlant.cost = value["Sun cost"];
-          else if (value["sun cost"] !== undefined) newPlant.cost = value["sun cost"];
-
-          if (value.range !== undefined) newPlant.range = value.range;
-          else if (value.Range !== undefined) newPlant.range = value.Range;
-
-          if (value.duration !== undefined) newPlant.duration = value.duration;
-          else if (value.Duration !== undefined) newPlant.duration = value.Duration;
-
-          if (value.area !== undefined) newPlant.area = value.area;
-          else if (value.Area !== undefined) newPlant.area = value.Area;
-
-          if (value.special !== undefined) newPlant.special = value.special;
-          else if (value.Special !== undefined) newPlant.special = value.Special;
-
-          if (value.toughness !== undefined) newPlant.toughness = value.toughness;
-          else if (value.Toughness !== undefined) newPlant.toughness = value.Toughness;
-
-          if (value.usage !== undefined) newPlant.usage = value.usage;
-          else if (value.Usage !== undefined) newPlant.usage = value.Usage;
-
-          if (value.weakness !== undefined) newPlant.weakness = value.weakness;
-          else if (value.Weakness !== undefined) newPlant.weakness = value.Weakness;
-
-          if (value.powerup !== undefined) newPlant.powerup = value.powerup;
-
-          if (value["damage details"] !== undefined) newPlant.damageDetails = value["damage details"];
-          else if (value["Damage details"] !== undefined) newPlant.damageDetails = value["Damage details"];
-
-          if (value["range details"] !== undefined) newPlant.rangeDetails = value["range details"];
-          else if (value["Range details"] !== undefined) newPlant.rangeDetails = value["Range details"];
-
-          if (value["sun-production"] !== undefined) newPlant.sunProduction = value["sun-production"];
-          
-          this._plantsAlmanac.update(plants => [...plants, newPlant]);
-        },
-
-        error: (error) => {
-          console.error(error);
-        },
-
-        complete: () => {
-          subscription.unsubscribe();
-        }
+      next: (value: any) => {
+        let newPlant = this.createDefaultPlant(); // Planta nova a afegir
         
-      });
+        newPlant.name = value.name;
+        newPlant.image = this.PUBLIC_URL + value.image;
+        
+        if (value.family !== undefined) newPlant.family = value.family;
+        else if (value.Family !== undefined) newPlant.family = value.Family;
+
+        if (value.description !== undefined) newPlant.description = value.description;
+
+        if (value.damage !== undefined) newPlant.damage = value.damage;
+        else if (value.Damage !== undefined) newPlant.damage = value.Damage;
+
+        if (value.recharge !== undefined) newPlant.recharge = value.recharge;
+        else if (value.Recharge !== undefined) newPlant.recharge = value.Recharge;
+
+        if (value.cost !== undefined) newPlant.cost = value.cost;
+        else if (value["Sun cost"] !== undefined) newPlant.cost = value["Sun cost"];
+        else if (value["sun cost"] !== undefined) newPlant.cost = value["sun cost"];
+
+        if (value.range !== undefined) newPlant.range = value.range;
+        else if (value.Range !== undefined) newPlant.range = value.Range;
+
+        if (value.duration !== undefined) newPlant.duration = value.duration;
+        else if (value.Duration !== undefined) newPlant.duration = value.Duration;
+
+        if (value.area !== undefined) newPlant.area = value.area;
+        else if (value.Area !== undefined) newPlant.area = value.Area;
+
+        if (value.special !== undefined) newPlant.special = value.special;
+        else if (value.Special !== undefined) newPlant.special = value.Special;
+
+        if (value.toughness !== undefined) newPlant.toughness = value.toughness;
+        else if (value.Toughness !== undefined) newPlant.toughness = value.Toughness;
+
+        if (value.usage !== undefined) newPlant.usage = value.usage;
+        else if (value.Usage !== undefined) newPlant.usage = value.Usage;
+
+        if (value.weakness !== undefined) newPlant.weakness = value.weakness;
+        else if (value.Weakness !== undefined) newPlant.weakness = value.Weakness;
+
+        if (value.powerup !== undefined) newPlant.powerup = value.powerup;
+
+        if (value["damage details"] !== undefined) newPlant.damageDetails = value["damage details"];
+        else if (value["Damage details"] !== undefined) newPlant.damageDetails = value["Damage details"];
+
+        if (value["range details"] !== undefined) newPlant.rangeDetails = value["range details"];
+        else if (value["Range details"] !== undefined) newPlant.rangeDetails = value["Range details"];
+
+        if (value["sun-production"] !== undefined) newPlant.sunProduction = value["sun-production"];
+        
+        this._plantsAlmanac.update(plants => [...plants, newPlant]); // Actualizem el array de Plantes amb la nova planta
+      },
+
+      error: (error) => {
+        console.error(error);
+      },
+
+      complete: () => {
+        subscription.unsubscribe();
+        // Si la llargada de l'array de noms es diferent a la de objectes planta, significa que encara queden peticions per realizar
+        if (this._plantsNames().length != this._plantsAlmanac().length) {
+          this.retrievePlantObject(numElement + 1); // Tornem a cridar a la funció per sent el següent element
+        } else {
+          this._arePlantsObjectsLoaded.set(true); // Avisem que tots els objectes ja estan carregats
+        }
+      }
     });
   }
 

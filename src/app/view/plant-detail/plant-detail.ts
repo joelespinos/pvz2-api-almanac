@@ -14,14 +14,20 @@ export class PlantDetail {
   private _plantsManager: PlantsManager = inject(PlantsManager);
 
   private _selectedPlant: Signal<Plant>;
+  private _arePlantsLoaded: Signal<boolean>;
 
   constructor() {
     this._selectedPlant = computed(() => {
       return this._plantsManager.getPlantByName(this.name());
     });
+    this._arePlantsLoaded = this._plantsManager.arePlantsObjectsLoaded;
   }
 
   get selectedPlant(): Signal<Plant> {
     return this._selectedPlant;
+  }
+
+  get arePlantsLoaded(): Signal<boolean> {
+    return this._arePlantsLoaded;
   }
 }
