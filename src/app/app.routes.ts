@@ -11,12 +11,12 @@ export const routes: Routes = [
 
     { path: 'plants', children: [
         { path: '', component: PlantsCatalog },
-        { path: ':name', component: PlantDetail }
+        { path: ':apiName', component: PlantDetail }
     ]},
 
     { path: 'zombies', children: [
         { path: '', component: ZombiesCatalog },
-        { path: ':name', component: ZombieDetail }
+        { path: ':apiName', component: ZombieDetail }
     ]},
     
     { path: '', redirectTo: 'home', pathMatch: 'full' },

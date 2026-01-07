@@ -1,17 +1,11 @@
-@if (arePlantsLoaded()) {
-
-    @if (selectedPlant().name != "") {
-        <img [src]="selectedPlant().image" [alt]="selectedPlant().name + ' Image'">
-        <p>{{ selectedPlant().name }}</p>
-        <p>{{ selectedPlant().description }}</p>
-        <p>{{ selectedPlant().cost }}</p>
-        <p>{{ selectedPlant().damage }}</p>
-        <p>{{ selectedPlant().family }}</p>
-        <p>{{ selectedPlant().recharge }}</p>
-    } @else {
-        <p>No plant was found related to the search</p>
-    }
-    
+@if (selectedPlant().name != "") {
+    <img [src]="selectedPlant().image" [alt]="selectedPlant().name + ' Image'">
+    <p>{{ selectedPlant().name }}</p>
+    <p>{{ selectedPlant().description }}</p>
+    <p>{{ selectedPlant().cost }}</p>
+    <p>{{ selectedPlant().damage }}</p>
+    <p>{{ selectedPlant().family }}</p>
+    <p>{{ selectedPlant().recharge }}</p>
 } @else {
-    <p>Loading plants... Wait some seconds</p>
+    <p>No plant was found related to the search</p>
 }

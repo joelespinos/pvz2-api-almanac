@@ -38,7 +38,7 @@ export class PlantsCatalog {
   }
 
   public setFamilyFilter(searchFamily: string): void {
-    return this._plantsManager.setFamilyFilter(searchFamily);
+    this._plantsManager.setFamilyFilter(searchFamily);
   }
 
 }

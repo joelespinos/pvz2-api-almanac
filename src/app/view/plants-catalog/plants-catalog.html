@@ -23,7 +23,7 @@
     @for (plant of plantsAlmanac(); track $index) {
         @if (isPlantNameInSearch(plant.name)) {
             
-            <div [routerLink]="[(plant.name)]" class="border-1">
+            <div [routerLink]="[(plant.apiName)]" class="border-1">
                 <p>{{ plant.cost }}</p>
                 
                 <div class="">

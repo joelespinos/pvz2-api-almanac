@@ -1,4 +1,7 @@
+const DEFAULT_DESCRIPTION: string = "There's no description for this plant yet...";
+
 export interface Plant {
+    apiName: string,
     name: string,
     image: string,
     family: string,
@@ -17,4 +20,26 @@ export interface Plant {
     powerup: string,
     sunProduction: string,
     description: string
+}
+
+export let DEFAULT_PLANT: Plant = {
+    apiName: "",
+    name: "",
+    image: "",
+    family: "",
+    damage: 0,
+    damageDetails: "",
+    area: "",
+    range: "",
+    rangeDetails: "",
+    duration: "",
+    special: "",
+    weakness: "",
+    usage: "",
+    cost: 0,
+    recharge: 0,
+    toughness: 0,
+    powerup: "",
+    sunProduction: "",
+    description: DEFAULT_DESCRIPTION
 }
