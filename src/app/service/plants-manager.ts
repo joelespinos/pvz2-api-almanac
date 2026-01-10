@@ -21,12 +21,16 @@ export class PlantsManager {
   private _familyFilter: WritableSignal<string>;                  // Filtre per familia
   private _familyFiltersList: WritableSignal<PlantFamilyFilter[]>;// Objectes de filtratge per familia
   private _selectedPlant: WritableSignal<Plant>;                  // Planta seleccionada (Detall)
-  
+  private _previousPlant: Signal<string>;                         // Nom de la planta previa a la seleccionada (Detall)
+  private _nextPlant: Signal<string>;                             // Nom de la planta posterior a la seleccionada (Detall)
+
   // Getters publics
   public plantsAlmanac: Signal<Plant[]>;
   public filteredPlantsAlmanac: Signal<Plant[]>;                  // Llista filtrada d'acord amb els filtres actius
   public familyFiltersList: Signal<PlantFamilyFilter[]>;
   public selectedPlant: Signal<Plant>;
+  public previousPlant: Signal<string>;
+  public nextPlant: Signal<string>;
 
   constructor() {
     this._plantsNames = signal<string[]>([]);
@@ -35,6 +39,31 @@ export class PlantsManager {
     this._familyFilter = signal<string>("");
     this._familyFiltersList = signal<PlantFamilyFilter[]>(PLANTS_FAMILY_FILTERS);
     this._selectedPlant = signal<Plant>(DEFAULT_PLANT);
+
+    // Segons la planta actual, actualizem la seva anterior
+    this._previousPlant = computed(() => {
+      let previousPlantName: string = "";
+      let indexPlant: number = this._plantsNames().findIndex(plantName => plantName == this._selectedPlant().apiName);
+
+      if (indexPlant != -1) {
+        if (indexPlant == this.FIRST_ELEMENT) previousPlantName = this._plantsNames()[this._plantsNames().length - 1];
+        else previousPlantName = this._plantsNames()[indexPlant - 1];
+      }
+
+      return previousPlantName;
+    });
+
+    this._nextPlant = computed(() => {
+      let nextPlantName: string = "";
+      let indexPlant: number = this._plantsNames().findIndex(plantName => plantName == this._selectedPlant().apiName);
+
+      if (indexPlant != -1) {
+        if (indexPlant == this._plantsNames().length - 1) nextPlantName = this._plantsNames()[this.FIRST_ELEMENT];
+        else nextPlantName = this._plantsNames()[indexPlant + 1];
+      }
+
+      return nextPlantName;
+    });
 
     // Computed de filtratge
     this._filteredPlantsAlmanac = computed(() => {
@@ -46,6 +75,8 @@ export class PlantsManager {
     this.filteredPlantsAlmanac = this._filteredPlantsAlmanac;
     this.familyFiltersList = this._familyFiltersList.asReadonly();
     this.selectedPlant = this._selectedPlant.asReadonly();
+    this.previousPlant = this._previousPlant;
+    this.nextPlant = this._nextPlant;
     
     this.retrievePlantsNames(); // Obtenim el nom de totes les plantes al carregar el service
     
