@@ -10,8 +10,10 @@ export class PlantsManager {
   private readonly PUBLIC_URL: string = "https://pvz-2-api.vercel.app"
   private readonly BASE_URL: string = "/api";
   private readonly PLANTS_ENDPOINT: string = "/plants"
-  private readonly FIRST_ELEMENT: number = 0;   // Primer element de la llista de noms en el que començarem a fer peticions pels objectes
-  
+  private readonly FIRST_ELEMENT: number = 0;                     // Primer element de la llista de noms en el que començarem a fer peticions pels objectes
+  private readonly COST_MAX_CHARS: number = 3;                    // El camp de cost sols podra tenir aquest numero de caràcters
+  private readonly DEFAULT_COST_FILTER_VALUE: string = "500";     
+
   private _httpClient: HttpClient = inject(HttpClient);
 
   private _plantsNames: WritableSignal<string[]>;
@@ -20,6 +22,7 @@ export class PlantsManager {
   private _filteredPlantsAlmanac: Signal<Plant[]>;                // Llista filtrada d'acord amb els filtres actius
   private _familyFilter: WritableSignal<string>;                  // Filtre per familia
   private _familyFiltersList: WritableSignal<PlantFamilyFilter[]>;// Objectes de filtratge per familia
+  private _costFilterValue: WritableSignal<string>;               // Filtre per cost de sol
   private _selectedPlant: WritableSignal<Plant>;                  // Planta seleccionada (Detall)
   private _previousPlant: Signal<string>;                         // Nom de la planta previa a la seleccionada (Detall)
   private _nextPlant: Signal<string>;                             // Nom de la planta posterior a la seleccionada (Detall)
@@ -37,17 +40,23 @@ export class PlantsManager {
     this._arePlantsNameLoaded = signal<boolean>(false);
     this._plantsAlmanac = signal<Plant[]>([]);
     this._familyFilter = signal<string>("");
+    this._costFilterValue = signal<string>(this.DEFAULT_COST_FILTER_VALUE);
     this._familyFiltersList = signal<PlantFamilyFilter[]>(PLANTS_FAMILY_FILTERS);
     this._selectedPlant = signal<Plant>(DEFAULT_PLANT);
+
+    // Computed de filtratge
+    this._filteredPlantsAlmanac = computed(() => {
+      return this._plantsAlmanac().filter(plant => plant.family.includes(this._familyFilter()) && plant.cost <= this._costFilterValue());
+    });
 
     // Segons la planta actual, actualizem la seva anterior
     this._previousPlant = computed(() => {
       let previousPlantName: string = "";
-      let indexPlant: number = this._plantsNames().findIndex(plantName => plantName == this._selectedPlant().apiName);
+      let indexPlant: number = this._filteredPlantsAlmanac().findIndex(plant => plant.apiName == this._selectedPlant().apiName);
 
       if (indexPlant != -1) {
-        if (indexPlant == this.FIRST_ELEMENT) previousPlantName = this._plantsNames()[this._plantsNames().length - 1];
-        else previousPlantName = this._plantsNames()[indexPlant - 1];
+        if (indexPlant == this.FIRST_ELEMENT) previousPlantName = this._filteredPlantsAlmanac()[this._filteredPlantsAlmanac().length - 1].apiName;
+        else previousPlantName = this._filteredPlantsAlmanac()[indexPlant - 1].apiName;
       }
 
       return previousPlantName;
@@ -55,19 +64,14 @@ export class PlantsManager {
 
     this._nextPlant = computed(() => {
       let nextPlantName: string = "";
-      let indexPlant: number = this._plantsNames().findIndex(plantName => plantName == this._selectedPlant().apiName);
-
+      let indexPlant: number = this.filteredPlantsAlmanac().findIndex(plant => plant.apiName == this._selectedPlant().apiName);
+      
       if (indexPlant != -1) {
-        if (indexPlant == this._plantsNames().length - 1) nextPlantName = this._plantsNames()[this.FIRST_ELEMENT];
-        else nextPlantName = this._plantsNames()[indexPlant + 1];
+        if (indexPlant == this._filteredPlantsAlmanac().length - 1) nextPlantName = this._filteredPlantsAlmanac()[this.FIRST_ELEMENT].apiName;
+        else nextPlantName = this._filteredPlantsAlmanac()[indexPlant + 1].apiName;
       }
 
       return nextPlantName;
-    });
-
-    // Computed de filtratge
-    this._filteredPlantsAlmanac = computed(() => {
-      return this._plantsAlmanac().filter(plant => plant.family.includes(this._familyFilter()));
     });
     
     // Getters publics
@@ -141,30 +145,33 @@ export class PlantsManager {
 
     if (value.description !== undefined) newPlant.description = value.description;
 
-    if (value.damage !== undefined) newPlant.damage = value.damage;
-    else if (value.Damage !== undefined) newPlant.damage = value.Damage;
-
-    if (value.recharge !== undefined) newPlant.recharge = value.recharge;
-    else if (value.Recharge !== undefined) newPlant.recharge = value.Recharge;
-
-    if (value.cost !== undefined) newPlant.cost = value.cost;
-    else if (value["Sun cost"] !== undefined) newPlant.cost = value["Sun cost"];
-    else if (value["sun cost"] !== undefined) newPlant.cost = value["sun cost"];
-
+    // API retorna string | number, convertim a string
+    if (value.damage !== undefined) newPlant.damage = value.damage.toString();
+    else if (value.Damage !== undefined) newPlant.damage = value.Damage.toString();
+    
+    // API retorna string | number, convertim a string
+    if (value.recharge !== undefined) newPlant.recharge = value.recharge.toString();
+    else if (value.Recharge !== undefined) newPlant.recharge = value.Recharge.toString();
+    
+    if (value.cost !== undefined) newPlant.cost = this.parseCostValue(value.cost);
+    else if (value["Sun cost"] !== undefined) newPlant.cost = this.parseCostValue(value["Sun cost"]);
+    else if (value["sun cost"] !== undefined) newPlant.cost = this.parseCostValue(value["sun cost"]);
+    
     if (value.range !== undefined) newPlant.range = value.range;
     else if (value.Range !== undefined) newPlant.range = value.Range;
-
+    
     if (value.duration !== undefined) newPlant.duration = value.duration;
     else if (value.Duration !== undefined) newPlant.duration = value.Duration;
-
+    
     if (value.area !== undefined) newPlant.area = value.area;
     else if (value.Area !== undefined) newPlant.area = value.Area;
-
+    
     if (value.special !== undefined) newPlant.special = value.special;
     else if (value.Special !== undefined) newPlant.special = value.Special;
-
-    if (value.toughness !== undefined) newPlant.toughness = value.toughness;
-    else if (value.Toughness !== undefined) newPlant.toughness = value.Toughness;
+    
+    // API retorna string | number, convertim a string
+    if (value.toughness !== undefined) newPlant.toughness = value.toughness.toString();
+    else if (value.Toughness !== undefined) newPlant.toughness = value.Toughness.toString();
 
     if (value.usage !== undefined) newPlant.usage = value.usage;
     else if (value.Usage !== undefined) newPlant.usage = value.Usage;
@@ -187,6 +194,14 @@ export class PlantsManager {
 
   private createDefaultPlant(): Plant {
     return {...DEFAULT_PLANT }; // Utilizem l'operador {...} per crear una nova referencia
+  }
+
+  // El valor de cost de sols pot ser o string o number, segons el que retorni l'API
+  public parseCostValue(value: string | number) {
+    let parsedValue = value.toString();
+    if (parsedValue.length > this.COST_MAX_CHARS) parsedValue = parsedValue.substring(0, this.COST_MAX_CHARS);
+    parsedValue = parsedValue.trim();
+    return parsedValue;
   }
 
   // Realitza una petició a la API per seleccionar la Planta que es revisa el seu detall
@@ -228,5 +243,9 @@ export class PlantsManager {
   public setFamilyFilter(searchFamily: string): void {
     if(this._familyFilter() == searchFamily) this._familyFilter.set("");
     else this._familyFilter.set(searchFamily);
+  }
+
+  public setCostFilter(costFilterValue: string): void {
+    this._costFilterValue.set(costFilterValue);
   }
 }

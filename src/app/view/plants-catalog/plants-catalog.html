@@ -10,6 +10,18 @@
 <input [(ngModel)]="plantNameSearch" placeholder="Search plant by name...">
 
 <!-- FILTRES -->
+<div class="flex">
+    <p>{{ minCostValue() }}</p>
+    
+    <input type="range" [(ngModel)]="costFilter" 
+    [min]="minCostValue()" 
+    [max]="maxCostValue()"
+    (change)="setCostFilter()">
+    
+    <p>{{ costFilter() }}</p>
+</div>
+
+<!-- FILTRES FAMILIA -->
 <div class="[&_img]:w-[40px]">
     @for (filter of familyFiltersList(); track $index) {
         <button (click)="setFamilyFilter(filter.name)">
