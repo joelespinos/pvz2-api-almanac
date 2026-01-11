@@ -1,55 +1,84 @@
-<div class="">
-    <button [routerLink]="['/home']">Home</button>
-    <img src="images/pvz2-api-logo.png" alt="PvZ 2 API Logo" class="w-[230px]">
-    <button [routerLink]="['/zombies']">View Zombies</button>    
-</div>
+<div style="background-image: url('images/backgrounds/plants_background.webp')" class="bg-cover bg-[center_40%] bg-fixed bg-no-repeat min-h-screen w-full">
 
-<h2 class="text-2xl">Plants Almanac</h2>
-
-<!-- CERCADOR -->
-<input [(ngModel)]="plantNameSearch" placeholder="Search plant by name...">
-
-<!-- FILTRES -->
-<div class="flex">
-    <p>{{ minCostValue() }}</p>
-    
-    <input type="range" [(ngModel)]="costFilter" 
-    [min]="minCostValue()" 
-    [max]="maxCostValue()"
-    (change)="setCostFilter()">
-    
-    <p>{{ costFilter() }}</p>
-</div>
-
-<!-- FILTRES FAMILIA -->
-<div class="[&_img]:w-[40px]">
-    @for (filter of familyFiltersList(); track $index) {
-        <button (click)="setFamilyFilter(filter.name)">
-            <img [src]="filter.imageIcon" [alt]="filter.name + ' Family'">
-        </button>
-    }
-</div>
-
-<!-- GRID DE CARDS -->
-@if (areAnyResultsInSearch()) {
-    @for (plant of plantsAlmanac(); track $index) {
-        @if (isPlantNameInSearch(plant.name)) {
+    <div class="flex flex-col justify-center items-center">
+        <div class="flex gap-x-20 ml-18 h-45">
+            <button [routerLink]="['/home']">
+                <img src="images/assets/home_icon.webp" alt="Home Page Icon" class="w-20 min-w-[80px] cursor-pointer">
+            </button>
             
-            <div [routerLink]="[(plant.apiName)]" class="border-1">
-                <p>{{ plant.cost }}</p>
-                
-                <div class="">
-                    <img [src]="plant.image" [alt]="plant.name + ' Image'">
-                </div>
-                
-                <h3>{{ plant.name }}</h3>
-                
-                <div class="">
-                    <p>{{ plant.description }}</p>
-                </div>
-            </div>
-        }
-    }
-} @else {
-    <p>No results where found related to the search</p>
-}
+            <img src="images/pvz2-api-logo.png" alt="PvZ 2 API Logo" class="w-70">
+            
+            <button [routerLink]="['/zombies']">
+                <img src="images/assets/zombies_icon.png" alt="Zombies Page Icon" class="w-26 min-w-[100px] cursor-pointer">
+            </button>    
+        </div>
+        
+        <h2>
+            <img src="images/assets/plants_title.png" alt="Plants title" class="w-60">
+        </h2>
+    
+        <!-- CERCADOR -->
+        <input [(ngModel)]="plantNameSearch" placeholder="Search plant by name..." class="w-70 my-5 bg-white px-2 py-1 rounded-md shadow-2xl">
+        
+        <!-- FILTRES -->
+        <div class="flex items-center gap-x-2 text-xl h-8">
+            <p style="background-image: url('images/assets/sun.webp'); text-shadow: 1px 1px 1px rgb(67, 67, 67), -1px -1px 2px rgb(160, 160, 160);"
+            class="flex justify-center items-center bg-cover bg-center bg-no-repeat w-11 h-11 text-center text-white font-semibold">
+                {{ minCostValue() }}
+            </p>
+            
+            <input type="range" [(ngModel)]="costFilter" 
+            [min]="minCostValue()" 
+            [max]="maxCostValue()"
+            (change)="setCostFilter()" class="bg-white rounded accent-yellow-300">
+            
+            <p style="background-image: url('images/assets/sun.webp'); text-shadow: 1px 1px 1px rgb(67, 67, 67), -1px -1px 2px rgb(160, 160, 160);"
+            class="flex justify-center items-center bg-cover bg-center bg-no-repeat w-11 h-11 text-center text-white font-semibold">
+                {{ costFilter() }}
+            </p>
+        </div>
+        
+        <!-- FILTRES FAMILIA -->
+        <div class="flex flex-wrap justify-center gap-2.5 my-5 w-[30%] [&_img]:w-[45px]">
+            @for (filter of familyFiltersList(); track $index) {
+                <button (click)="setFamilyFilter(filter.name)">
+                    <img [src]="filter.imageIcon" [alt]="filter.name + ' Family'">
+                </button>
+            }
+        </div>
+        
+        <!-- GRID DE CARDS -->
+        <div class="w-[80%] mt-5 flex flex-wrap gap-10 justify-center">
+
+            @if (areAnyResultsInSearch()) {
+                @for (plant of plantsAlmanac(); track $index) {
+                    @if (isPlantNameInSearch(plant.name)) {
+                        
+                        <div [routerLink]="[(plant.apiName)]" class="relative w-[250px] h-[310px] bg-[#90421B] border-2 border-[#4C1705] rounded-xl shadow-[inset_0_4px_11px_rgba(0,0,0,0.4)] hover:-translate-y-3 transition-transform duration-400 cursor-pointer">
+                            
+                            <div class="my-5">
+
+                                <p style="background-image: url('images/assets/sun.webp'); text-shadow: 1px 1px 1px rgb(67, 67, 67), -1px -1px 2px rgb(160, 160, 160);"
+                                class="absolute top-[-25px] left-[-20px] flex justify-center items-center bg-cover bg-center bg-no-repeat w-15 h-15 text-center text-white text-2xl font-semibold">
+                                {{ plant.cost }}
+                                </p>
+                                
+                                <div class="flex justify-center bg-[#6C3112] mx-5 py-3 border-2 border-[#4C1705] rounded-xl shadow-[inset_0_4px_11px_rgba(0,0,0,0.4)]">
+                                    <img [src]="plant.image" [alt]="plant.name + ' Image'">
+                                </div>
+                                
+                                <h3 class="text-center text-2xl font-semibold my-2 text-[#E9BB63]">{{ plant.name }}</h3>
+                                
+                                <div class="flex justify-center border-box h-25 bg-[#FCC689] mx-5 py-3 px-2 border-2 border-[#4C1705] rounded-xl line-clamp-1">
+                                    <p>{{ plant.description }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            } @else {
+                <p>No results where found related to the search</p>
+            }
+        </div>
+    </div>
+</div>

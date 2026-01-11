@@ -1,3 +1,7 @@
-<button [routerLink]="['/plants']">View Plants </button>
-<button [routerLink]="['/zombies']">View Zombies</button>
-<img src="images/pvz2-api-logo.png" alt="PvZ 2 API Logo" class="w-[230px]">
+<div style="background-image: url('images/backgrounds/home_background.png')" class="bg-cover bg-[center_40%] bg-no-repeat h-screen w-full">
+    <div class="absolute bottom-[30%] w-full flex justify-center gap-x-[540px] border-5 border-red-500">
+        <button [routerLink]="['/plants']" class="">View Plants</button>
+        <button [routerLink]="['/zombies']">View Zombies</button>
+    </div>
+    <img src="images/pvz2-api-logo.png" alt="PvZ 2 API Logo" class="w-[255px] absolute bottom-0 left-1/2 -translate-x-1/2">
+</div>
