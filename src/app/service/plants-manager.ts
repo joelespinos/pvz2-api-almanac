@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, effect, inject, Injectable, signal, Signal, WritableSignal } from '@angular/core';
 import { Plant, DEFAULT_PLANT } from '../model/plant';
-import { PlantFamilyFilter, PLANTS_FAMILY_FILTERS } from '../model/plant-family-filter';
+import { PlantFamilyFilter, PLANTS_FAMILY_FILTERS, FAMILY_NOT_FOUND } from '../model/plant-family-filter';
 
 @Injectable({
   providedIn: 'root',
@@ -57,7 +57,9 @@ export class PlantsManager {
 
     // Computed de filtratge
     this._filteredPlantsAlmanac = computed(() => {
-      return this._plantsAlmanac().filter(plant => plant.family.includes(this._familyFilter()) && plant.cost <= this._costFilterValue());
+      return this._plantsAlmanac().filter(plant => plant.family.includes(this._familyFilter()) && 
+                                          plant.cost <= this._costFilterValue() && 
+                                          plant.name.toUpperCase().includes(this._plantNameSearch().toUpperCase().trim()));
     });
 
     // Segons la planta actual, actualizem la seva anterior
@@ -244,10 +246,6 @@ export class PlantsManager {
     }
   }
 
-  public isPlantNameInSearch(plantName: string, search: string): boolean {
-    return plantName.toUpperCase().includes(search.toUpperCase().trim());
-  }
-
   public areAnyResultsInSearch(search: string): boolean {
     let searchedPlant = this.filteredPlantsAlmanac().find(plant => plant.name.toUpperCase().includes(search.toUpperCase().trim()));
     if (searchedPlant != undefined) return true;
@@ -272,5 +270,12 @@ export class PlantsManager {
     this._costFilterValue.set(this.DEFAULT_COST_FILTER_VALUE);
     this._plantNameSearch.set(this.DEFAULT_SEARCH_VALUE);
     this._familyFilter.set(this.DEFAULT_FAMILY_FILTER_VALUE);
+  }
+
+  public getFamilyIconUrl(familyName: string): string {
+    let familyIconUrl: string = FAMILY_NOT_FOUND;
+    let plantFamilyFilter = PLANTS_FAMILY_FILTERS.find(plantFamily => plantFamily.name == familyName.trim());
+    if (plantFamilyFilter != undefined) familyIconUrl = plantFamilyFilter.imageIcon;
+    return familyIconUrl;
   }
 }

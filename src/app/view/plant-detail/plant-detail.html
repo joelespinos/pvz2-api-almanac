@@ -1,15 +1,147 @@
-<button [routerLink]="['/plants']">Tornar a les plantes</button>
+<div style="background-image: url('images/backgrounds/plants_background.webp')" class="flex flex-col bg-cover bg-[center_40%] bg-fixed bg-no-repeat min-h-screen w-full">
+    <div class="flex flex-1 justify-center items-center">
 
-@if (selectedPlant().name != "") {
-    <button [routerLink]="['/plants', previousPlantName()]">Anterior</button>
-    <img [src]="selectedPlant().image" [alt]="selectedPlant().name + ' Image'">
-    <p>{{ selectedPlant().name }}</p>
-    <p>{{ selectedPlant().description }}</p>
-    <p>{{ selectedPlant().cost }}</p>
-    <p>{{ selectedPlant().damage }}</p>
-    <p>{{ selectedPlant().family }}</p>
-    <p>{{ selectedPlant().recharge }}</p>
-    <button [routerLink]="['/plants', nextPlantName()]">Seguent</button>
-} @else {
-    <p>No plant was found related to the search</p>
-}
+        @if (selectedPlant().name != "") {
+            <div class="w-full flex justify-center gap-x-10">
+                
+                @if (previousPlantName() != '') {
+                    <button [routerLink]="['/plants', previousPlantName()]">
+                        <img src="images/assets/plants/plants_previous.png" alt="Previous Plant" class="w-30 cursor-pointer">
+                    </button>
+                }
+                
+                <div class="relative w-[750px] px-10 pb-5 bg-[#90421B] border-[#4C1705] border-5 rounded-2xl shadow-[inset_0_4px_11px_rgba(0,0,0,0.4)]">
+                    
+                    <button [routerLink]="['/plants']">
+                        <img src="images/assets/plants/plants_return.png" alt="Return To Plants" class="absolute w-20 top-[-30px] left-[-30px] cursor-pointer">
+                    </button>
+
+                    <p class="text-center text-[#E9BB63] font-bold text-3xl mb-5">{{ selectedPlant().name }}</p>
+                    
+                    <div class="flex">
+                        <div class="flex flex-col gap-5">
+                            <div class="w-45 flex justify-center items-center p-10 bg-[#6C3112] border-2 border-[#4C1705] rounded-xl shadow-[inset_0_4px_12px_rgba(0,0,0,0.4)]">
+                                <img [src]="selectedPlant().image" [alt]="selectedPlant().name + ' Image'" class=" w-60">
+                            </div>
+                            <div class="flex justify-center gap-x-5">
+
+                                <p style="background-image: url('images/assets/sun.webp'); text-shadow: 1px 1px 1px rgb(67, 67, 67), -1px -1px 2px rgb(160, 160, 160);"
+                                class="flex justify-center items-center bg-cover bg-center bg-no-repeat w-13 h-13 text-center text-white text-xl font-semibold">
+                                    {{ selectedPlant().cost }}
+                                </p>
+                                <div class="flex flex-col justify-center items-center">
+                                    <img [src]="getFamilyIconUrl(selectedPlant().family)" alt="Family Icon" class="w-[50px] object-cover">
+                                    <p class="text-[#E9BB63] font-bold">{{ selectedPlant().family }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="">
+                            @if (selectedPlant().damage != '') {
+                                <div class="flex gap-1 items-center">
+                                    <img src="images/assets/plants/plants_damage.png" alt="Damage" class="w-[60px] rounded-lg">
+                                    <p>{{ selectedPlant().damage }}</p>
+                                </div>
+                            }
+
+                            @if (selectedPlant().damageDetails != '') {
+                                <div class="flex gap-1 items-center">
+                                    <img src="images/assets/plants/plants_damage_details.png" alt="Damage Details" class="w-[60px] rounded-lg">
+                                    <p>{{ selectedPlant().damageDetails }}</p>
+                                </div>
+                            }
+
+                            @if (selectedPlant().area != '') {
+                                <div class="flex gap-1 items-center">
+                                    <img src="images/assets/plants/plants_area.png" alt="Area" class="w-[60px] rounded-lg">
+                                    <p>{{ selectedPlant().area }}</p>
+                                </div>
+                            }
+
+                            @if (selectedPlant().range != '') {
+                                <div class="flex gap-1 items-center">
+                                    <img src="images/assets/plants/plants_range.png" alt="Range" class="w-[60px] rounded-lg">
+                                    <p>{{ selectedPlant().range }}</p>
+                                </div>
+                            }
+
+                            @if (selectedPlant().rangeDetails != '') {
+                                <div class="flex gap-1 items-center">
+                                    <img src="images/assets/plants/plants_range_details.png" alt="Range Details" class="w-[60px] rounded-lg">
+                                    <p>{{ selectedPlant().rangeDetails }}</p>
+                                </div>
+                            }
+
+                            @if (selectedPlant().duration != '') {
+                                <div class="flex gap-1 items-center">
+                                    <img src="images/assets/plants/plants_duration.png" alt="Duration" class="w-[60px] rounded-lg">
+                                    <p>{{ selectedPlant().duration }}</p>
+                                </div>
+                            }
+
+                            @if (selectedPlant().special != '') {
+                                <div class="flex gap-1 items-center">
+                                    <img src="images/assets/plants/plants_special.png" alt="Special" class="w-[60px] rounded-lg">
+                                    <p>{{ selectedPlant().special }}</p>
+                                </div>
+                            }
+
+                            @if (selectedPlant().weakness != '') {
+                                <div class="flex gap-1 items-center">
+                                    <img src="images/assets/plants/plants_weakness.png" alt="Weakness" class="w-[60px] rounded-lg">
+                                    <p>{{ selectedPlant().weakness }}</p>
+                                </div>
+                            }
+
+                            @if (selectedPlant().usage != '') {
+                                <div class="flex gap-1 items-center">
+                                    <img src="images/assets/plants/plants_usage.png" alt="Usage" class="w-[60px] rounded-lg">
+                                    <p>{{ selectedPlant().usage }}</p>
+                                </div>
+                            }
+
+                            @if (selectedPlant().recharge != '') {
+                                <div class="flex gap-1 items-center">
+                                    <img src="images/assets/plants/plants_recharge.png" alt="Recharge" class="w-[60px] rounded-lg">
+                                    <p>{{ selectedPlant().recharge }}</p>
+                                </div>
+                            }
+
+                            @if (selectedPlant().toughness != '') {
+                                <div class="flex gap-1 items-center">
+                                    <img src="images/assets/plants/plants_toughness.png" alt="Toughness" class="w-[60px] rounded-lg">
+                                    <p>{{ selectedPlant().toughness }}</p>
+                                </div>
+                            }
+
+                            @if (selectedPlant().powerup != '') {
+                                <div class="flex gap-1 items-center">
+                                    <img src="images/assets/plants/plants_powerup.png" alt="Powerup" class="w-[60px] rounded-lg">
+                                    <p>{{ selectedPlant().powerup }}</p>
+                                </div>
+                            }
+
+                            @if (selectedPlant().sunProduction != '') {
+                                <div class="flex gap-1 items-center">
+                                    <img src="images/assets/plants/plants_sun_production.png" alt="Sun Production" class="w-[60px] rounded-lg">
+                                    <p>{{ selectedPlant().sunProduction }}</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="my-5 p-4 bg-[#FCC689] border-2 border-[#4C1705] rounded-lg shadow-2xl">
+                        {{ selectedPlant().description }}
+                    </div>
+                </div>
+                
+                @if (nextPlantName() != '') {
+                    <button [routerLink]="['/plants', nextPlantName()]">
+                        <img src="images/assets/plants/plants_next.png" alt="Next Plant" class="w-30 cursor-pointer">
+                    </button>
+                }
+            </div>
+        } @else {
+            <p>No plant was found related to the search</p>
+        }
+    </div>
+</div>

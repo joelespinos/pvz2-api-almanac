@@ -3,6 +3,7 @@ export interface PlantFamilyFilter {
     imageIcon: string
 }
 
+export const FAMILY_NOT_FOUND: string = "images/plants-filter-icons/family_no_found.png";
 export const PLANTS_FAMILY_FILTERS: PlantFamilyFilter[] = [
   {
     name: "Appease-mint",

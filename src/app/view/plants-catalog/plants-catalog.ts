@@ -47,10 +47,6 @@ export class PlantsCatalog {
     return this.MAX_COST_FILTER_VALUE;
   }
 
-  public isPlantNameInSearch(plantName: string): boolean {
-    return this._plantsManager.isPlantNameInSearch(plantName, this.plantNameSearch());
-  }
-
   public areAnyResultsInSearch(): boolean {
     return this._plantsManager.areAnyResultsInSearch(this.plantNameSearch());
   }

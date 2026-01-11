@@ -39,4 +39,8 @@ export class PlantDetail {
   get nextPlantName(): Signal<string> {
     return this._nextPlantName;
   }
+
+  public getFamilyIconUrl(familyName: string): string {
+    return this._plantsManager.getFamilyIconUrl(familyName);
+  }
 }
