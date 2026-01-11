@@ -12,7 +12,11 @@ export class PlantsManager {
   private readonly PLANTS_ENDPOINT: string = "/plants"
   private readonly FIRST_ELEMENT: number = 0;                     // Primer element de la llista de noms en el que començarem a fer peticions pels objectes
   private readonly COST_MAX_CHARS: number = 3;                    // El camp de cost sols podra tenir aquest numero de caràcters
+  private readonly DEFAULT_SEARCH_VALUE: string = "";
   private readonly DEFAULT_COST_FILTER_VALUE: string = "500";     
+  private readonly DEFAULT_FAMILY_FILTER_VALUE: string = "";
+  private readonly UNSELECTED_FAMILY_FILTER_STYLE: string = "border-black";
+  private readonly SELECTED_FAMILY_FILTER_STYLE: string = "border-green-400";
 
   private _httpClient: HttpClient = inject(HttpClient);
 
@@ -20,8 +24,10 @@ export class PlantsManager {
   private _arePlantsNameLoaded: WritableSignal<boolean>;          // Booleà per controlar el moment en que la carrega de noms de plantes ha acabat
   private _plantsAlmanac: WritableSignal<Plant[]>;                // Array que contindra tots els objectes Planta
   private _filteredPlantsAlmanac: Signal<Plant[]>;                // Llista filtrada d'acord amb els filtres actius
+  private _plantNameSearch: WritableSignal<string>;
   private _familyFilter: WritableSignal<string>;                  // Filtre per familia
   private _familyFiltersList: WritableSignal<PlantFamilyFilter[]>;// Objectes de filtratge per familia
+  private _familyFiltersStyles: Signal<string[]>;         // Array de les diferentes class d'estils aplicats als filtres de familia
   private _costFilterValue: WritableSignal<string>;               // Filtre per cost de sol
   private _selectedPlant: WritableSignal<Plant>;                  // Planta seleccionada (Detall)
   private _previousPlant: Signal<string>;                         // Nom de la planta previa a la seleccionada (Detall)
@@ -31,6 +37,9 @@ export class PlantsManager {
   public plantsAlmanac: Signal<Plant[]>;
   public filteredPlantsAlmanac: Signal<Plant[]>;                  // Llista filtrada d'acord amb els filtres actius
   public familyFiltersList: Signal<PlantFamilyFilter[]>;
+  public familyFilter: Signal<string>;
+  public costFilterValue: WritableSignal<string>;
+  public plantNameSearch: WritableSignal<string>;
   public selectedPlant: Signal<Plant>;
   public previousPlant: Signal<string>;
   public nextPlant: Signal<string>;
@@ -39,9 +48,11 @@ export class PlantsManager {
     this._plantsNames = signal<string[]>([]);
     this._arePlantsNameLoaded = signal<boolean>(false);
     this._plantsAlmanac = signal<Plant[]>([]);
-    this._familyFilter = signal<string>("");
+    this._plantNameSearch = signal<string>(this.DEFAULT_SEARCH_VALUE);
+    this._familyFilter = signal<string>(this.DEFAULT_FAMILY_FILTER_VALUE);
     this._costFilterValue = signal<string>(this.DEFAULT_COST_FILTER_VALUE);
     this._familyFiltersList = signal<PlantFamilyFilter[]>(PLANTS_FAMILY_FILTERS);
+    this._familyFiltersStyles = signal<string[]>([this.UNSELECTED_FAMILY_FILTER_STYLE, this.SELECTED_FAMILY_FILTER_STYLE]);
     this._selectedPlant = signal<Plant>(DEFAULT_PLANT);
 
     // Computed de filtratge
@@ -77,7 +88,10 @@ export class PlantsManager {
     // Getters publics
     this.plantsAlmanac = this._plantsAlmanac.asReadonly();
     this.filteredPlantsAlmanac = this._filteredPlantsAlmanac;
+    this.plantNameSearch = this._plantNameSearch;
     this.familyFiltersList = this._familyFiltersList.asReadonly();
+    this.familyFilter = this._familyFilter.asReadonly();
+    this.costFilterValue = this._costFilterValue;
     this.selectedPlant = this._selectedPlant.asReadonly();
     this.previousPlant = this._previousPlant;
     this.nextPlant = this._nextPlant;
@@ -247,5 +261,16 @@ export class PlantsManager {
 
   public setCostFilter(costFilterValue: string): void {
     this._costFilterValue.set(costFilterValue);
+  }
+
+  public getFamilyFilterStyle(familyFilterName: string): string {
+    if (familyFilterName == this._familyFilter()) return this._familyFiltersStyles()[1]; // Selected
+    else return this._familyFiltersStyles()[0]; // Unselected
+  }
+
+  public cleanAllFilters(): void {
+    this._costFilterValue.set(this.DEFAULT_COST_FILTER_VALUE);
+    this._plantNameSearch.set(this.DEFAULT_SEARCH_VALUE);
+    this._familyFilter.set(this.DEFAULT_FAMILY_FILTER_VALUE);
   }
 }

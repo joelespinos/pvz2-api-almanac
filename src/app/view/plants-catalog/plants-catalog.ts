@@ -12,23 +12,23 @@ import { PlantFamilyFilter } from '../../model/plant-family-filter';
   styleUrl: './plants-catalog.css',
 })
 export class PlantsCatalog {
-  private readonly DEFAULT_SEARCH_VALUE: string = "";
-  private readonly DEFAULT_COST_FILTER_VALUE: string = "500";
   private readonly MIN_COST_FILTER_VALUE: Signal<string> = signal<string>("0");
   private readonly MAX_COST_FILTER_VALUE: Signal<string> = signal<string>("500");
 
   private _plantsManager: PlantsManager = inject(PlantsManager);
 
-  public plantsAlmanac: Signal<Plant[]>;
-  public familyFiltersList: Signal<PlantFamilyFilter[]>;
+  public plantsAlmanac: Signal<Plant[]>;                  // Llista d'objectes Plant ja filtrada
+  public familyFiltersList: Signal<PlantFamilyFilter[]>;  // Array dels objectes de filtres de familia
+  private _familyFilterSelected: Signal<string>;          // Nom del filtre de familia seleccionat
   private _plantNameSearch: WritableSignal<string>;
   private _costFilter: WritableSignal<string>;
 
   constructor() {
     this.plantsAlmanac = this._plantsManager.filteredPlantsAlmanac;
     this.familyFiltersList = this._plantsManager.familyFiltersList;
-    this._plantNameSearch = signal<string>(this.DEFAULT_SEARCH_VALUE);
-    this._costFilter = signal<string>(this.DEFAULT_COST_FILTER_VALUE);
+    this._familyFilterSelected = this._plantsManager.familyFilter;
+    this._plantNameSearch = this._plantsManager.plantNameSearch;
+    this._costFilter = this._plantsManager.costFilterValue;
   }
 
   public get plantNameSearch(): WritableSignal<string> {
@@ -63,4 +63,11 @@ export class PlantsCatalog {
     this._plantsManager.setCostFilter(this._costFilter());
   }
 
+  public getFamilyFilterStyle(familyFilterName: string): string {
+    return this._plantsManager.getFamilyFilterStyle(familyFilterName);
+  }
+
+  public cleanAllFilters(): void {
+    this._plantsManager.cleanAllFilters();
+  }
 }
