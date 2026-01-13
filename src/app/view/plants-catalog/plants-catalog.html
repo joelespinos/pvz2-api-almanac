@@ -58,25 +58,27 @@
 
             @if (areAnyResultsInSearch()) {
                 @for (plant of plantsAlmanac(); track $index) {
-                    <div [routerLink]="[(plant.apiName)]" class="relative w-[250px] h-[310px] bg-[#90421B] border-2 border-[#4C1705] rounded-xl shadow-[inset_0_4px_11px_rgba(0,0,0,0.4)] hover:-translate-y-3 transition-transform duration-400 cursor-pointer">
+                    <div [routerLink]="[(plant.apiName)]" class="relative hover:-translate-y-3 transition-transform duration-400 cursor-pointer">
                         
-                        <div class="my-5">
+                        <p style="background-image: url('images/assets/sun.webp'); text-shadow: 1px 1px 1px rgb(67, 67, 67), -1px -1px 2px rgb(160, 160, 160);"
+                            class="absolute z-10 top-[-25px] left-[-20px] flex justify-center items-center bg-cover bg-center bg-no-repeat w-15 h-15 text-center text-white text-2xl font-semibold">
+                            {{ plant.cost }}
+                        </p>
 
-                            <p style="background-image: url('images/assets/sun.webp'); text-shadow: 1px 1px 1px rgb(67, 67, 67), -1px -1px 2px rgb(160, 160, 160);"
-                            class="absolute top-[-25px] left-[-20px] flex justify-center items-center bg-cover bg-center bg-no-repeat w-15 h-15 text-center text-white text-2xl font-semibold">
-                                {{ plant.cost }}
-                            </p>
+                        <div class="relative w-[250px] h-[310px] bg-[#90421B] border-2 border-[#4C1705] rounded-xl shadow-[inset_0_4px_11px_rgba(0,0,0,0.4)] overflow-hidden">
                             
-                            <div class="flex justify-center bg-[#6C3112] mx-5 py-3 border-2 border-[#4C1705] rounded-xl shadow-[inset_0_4px_11px_rgba(0,0,0,0.4)]">
-                                <img [src]="plant.image" [alt]="plant.name + ' Image'">
+                            <div class="my-5">
+                                
+                                <div class="flex justify-center bg-[#6C3112] mx-5 py-3 border-2 border-[#4C1705] rounded-xl shadow-[inset_0_4px_11px_rgba(0,0,0,0.4)]">
+                                    <img [src]="plant.image" [alt]="plant.name + ' Image'">
+                                </div>
+                                
+                                <h3 class="text-center text-2xl font-semibold my-2 text-[#E9BB63]">{{ plant.name }}</h3>
+                                
+                                <div class="flex justify-center border-box h-25 bg-[#FCC689] mx-5 py-3 px-2 border-2 border-[#4C1705] rounded-xl line-clamp-1">
+                                    <p>{{ plant.description }}</p>
+                                </div>
                             </div>
-                            
-                            <h3 class="text-center text-2xl font-semibold my-2 text-[#E9BB63]">{{ plant.name }}</h3>
-                            
-                            <div class="flex justify-center border-box h-25 bg-[#FCC689] mx-5 py-3 px-2 border-2 border-[#4C1705] rounded-xl line-clamp-1">
-                                <p>{{ plant.description }}</p>
-                            </div>
-
                         </div>
                     </div>
                 }
