@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { computed, inject, Injectable, signal, Signal, WritableSignal } from '@angular/core';
+import { computed, effect, inject, Injectable, signal, Signal, WritableSignal } from '@angular/core';
 import { Zombie, DEFAULT_ZOMBIE } from '../model/zombie';
 
 @Injectable({
@@ -26,7 +26,7 @@ export class ZombiesManager {
   // Getters Publics
   public zombiesAlmanac: Signal<Zombie[]>;
   public filteredZombiesAlmanac: Signal<Zombie[]>;
-  public zombieNameSearch: Signal<string>;
+  public zombieNameSearch: WritableSignal<string>;
   public selectedZombie: Signal<Zombie>;
   public previousZombieName: Signal<string>;
   public nextZombieName: Signal<string>;
@@ -77,6 +77,110 @@ export class ZombiesManager {
     this.previousZombieName = this._previousZombieName;
     this.nextZombieName = this._nextZombieName;
 
-    // a partir de retrieveZombiesNames()
+    this.retrieveZombiesNames(); // Obtenim el nom de tots els zombies al carregar el service
+
+    // Una vegada la carrega de noms hagi conclós crida a retrievePlantsObjects()
+    effect(() => {
+      if(this._areZombiesNamesLoaded()) this.retrieveZombiesObjects(this.FIRST_ELEMENT); // Iniciem la crida de peticions pel primer element
+    });
+  }
+
+  private retrieveZombiesNames() {
+    
+    const subscription = this._httpClient.get<string[]>(this.BASE_URL + this.ZOMBIES_ENDPOINT).subscribe({
+
+      next: (value: any) => {
+        this._zombiesNames.set(value);
+      },
+
+      error: (error) => {
+        console.error(error);
+      },
+
+      complete: () => {
+        subscription.unsubscribe();
+        this._areZombiesNamesLoaded.set(true);
+      }
+
+    });
+  }
+
+  private retrieveZombiesObjects(numElement: number): void {
+    let zombieEndPoint = "/" + this._zombiesNames()[numElement];
+    let subscription = this._httpClient.get<Zombie>(this.BASE_URL + this.ZOMBIES_ENDPOINT + zombieEndPoint).subscribe({
+      
+      next: (value) => {
+        let zombieToAdd = this.parseValueToZombie(value);
+        zombieToAdd.apiName = this._zombiesNames()[numElement];
+
+        this._zombiesAlmanac.update(zombies => [...zombies, zombieToAdd]);
+      },
+
+      error: (error) => {
+        console.error(error);
+      },
+
+      complete: () => {
+        subscription.unsubscribe();
+
+        if (this._zombiesNames().length != this._zombiesAlmanac().length)
+          this.retrieveZombiesObjects(numElement + 1);
+      },
+    });
+  }
+
+  private parseValueToZombie(value: any): Zombie {
+    let newZombie = this.createDefaultZombie();
+
+    newZombie.name = value.name;
+    newZombie.image = this.PUBLIC_URL + value.image;
+
+    if (value.toughness !== undefined) newZombie.toughness = value.toughness.toString();
+    else if (value.Toughness !== undefined) newZombie.toughness = value.Toughness.toString();
+
+    if (value.speed !== undefined) newZombie.speed = value.speed.toString();
+    else if (value.Speed !== undefined) newZombie.speed = value.Speed.toString();
+
+    if (value.stamina !== undefined) newZombie.stamina = value.stamina.toString();
+    else if (value.Stamina !== undefined) newZombie.stamina = value.Stamina.toString();
+
+    if (value.description !== undefined) newZombie.description = value.description;
+
+    return newZombie;
+  }
+
+  private createDefaultZombie(): Zombie {
+    return { ...DEFAULT_ZOMBIE };
+  }
+
+  public getZombieObjectByName(name: string): void {
+    let zombieAlreadyLoaded = this._zombiesAlmanac().find(zombie => zombie.apiName == name);
+
+    if (zombieAlreadyLoaded !== undefined) {
+      this._selectedZombie.set(zombieAlreadyLoaded);
+    
+    } else {
+      let zombieEndPoint = "/" + name;
+      let subscription = this._httpClient.get<Zombie>(this.BASE_URL + this.ZOMBIES_ENDPOINT + zombieEndPoint).subscribe({
+      
+        next: (value) => {
+          this._selectedZombie.set(this.parseValueToZombie(value));
+        },
+
+        error: (error) => {
+          console.error(error);
+        },
+
+        complete: () => {
+          subscription.unsubscribe();
+        },
+      });
+    }
+  }
+
+  public areAnyResultsInSearch(search: string): boolean {
+    let searchedZombie = this._filteredZombiesAlmanac().find(zombie => zombie.name.toUpperCase().includes(search.toUpperCase().trim()));
+    if (searchedZombie != undefined) return true;
+    else return false;
   }
 }

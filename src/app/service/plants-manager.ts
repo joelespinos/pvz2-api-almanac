@@ -232,7 +232,7 @@ export class PlantsManager {
       let subscription = this._httpClient.get<Plant>(this.BASE_URL + this.PLANTS_ENDPOINT + plantEndPoint).subscribe({
         
         next: (value: any) => {
-          this._selectedPlant.set(this.parseValueToPlant(value)); // Actualizem el array de Plantes amb la nova planta
+          this._selectedPlant.set(this.parseValueToPlant(value));
         },
         
         error: (error) => {

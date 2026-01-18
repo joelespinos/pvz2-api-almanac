@@ -1,1 +1,78 @@
-<p>zombie-detail works!</p>
+<div style="background-image: url('images/backgrounds/plants_background.webp')" class="flex flex-col bg-cover bg-[center_40%] bg-fixed bg-no-repeat min-h-screen w-full">
+    <div class="flex flex-1 justify-center items-center">
+
+        @if (selectedZombie().name != "") {
+            <div class="w-full flex justify-center gap-x-10">
+                
+                @if (previousZombieName() != '') {
+                    <button [routerLink]="['/zombies', previousZombieName()]">
+                        <img src="images/assets/plants/plants_previous.png" alt="Previous Plant" class="w-30 cursor-pointer">
+                    </button>
+                }
+                
+                <div class="relative flex flex-col justify-evenly w-[750px] h-[520px] px-10 pb-5 bg-[#90421B] border-[#4C1705] border-5 rounded-2xl shadow-[inset_0_4px_11px_rgba(0,0,0,0.4)]">
+                    
+                    <button [routerLink]="['/zombies']">
+                        <img src="images/assets/plants/plants_return.png" alt="Return To Plants" class="absolute w-20 top-[-30px] left-[-30px] cursor-pointer">
+                    </button>
+
+                    <p class="text-center text-[#E9BB63] font-bold text-3xl mb-5">{{ selectedZombie().name }}</p>
+                    
+                    <div class="flex gap-7">
+                        <div class="flex flex-col gap-5">
+                            <div class="w-45 flex justify-center items-center p-10 bg-[#6C3112] border-2 border-[#4C1705] rounded-xl shadow-[inset_0_4px_12px_rgba(0,0,0,0.4)]">
+                                <img [src]="selectedZombie().image" [alt]="selectedZombie().name + ' Image'" class=" w-60">
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-wrap [&_p]: text-[#E9BB63] font-semibold">
+                            @if (selectedZombie().toughness != '') {
+                                <div class="w-1/2 flex gap-2 items-center">
+                                    <img src="images/assets/plants/plants_damage.png" alt="Damage" class="min-w-[60px] w-[60px] rounded-lg">
+                                    <p>{{ selectedZombie().toughness }}</p>
+                                </div>
+                            }
+
+                            @if (selectedZombie().speed != '') {
+                                <div class="w-1/2 flex gap-2 items-center">
+                                    <img src="images/assets/plants/plants_damage_details.png" alt="Damage Details" class="min-w-[60px] w-[60px] rounded-lg">
+                                    <p>{{ selectedZombie().speed }}</p>
+                                </div>
+                            }
+
+                            @if (selectedZombie().stamina != '') {
+                                <div class="w-1/2 flex gap-2 items-center">
+                                    <img src="images/assets/plants/plants_area.png" alt="Area" class="min-w-[60px] w-[60px] rounded-lg">
+                                    <p>{{ selectedZombie().stamina }}</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="my-5 p-4 bg-[#FCC689] border-2 border-[#4C1705] rounded-lg shadow-2xl">
+                        {{ selectedZombie().description }}
+                    </div>
+                </div>
+                
+                @if (nextZombieName() != '') {
+                    <button [routerLink]="['/zombies', nextZombieName()]">
+                        <img src="images/assets/plants/plants_next.png" alt="Next Plant" class="w-30 cursor-pointer">
+                    </button>
+                }
+            </div>
+        } @else {
+
+            <div class="flex flex-col gap-5">
+                <div class="flex justify-center">
+                    <button [routerLink]="['/plants']">
+                        <img src="images/assets/plants/plants_return.png" alt="Return To Plants" class="w-20 top-[-65px] left-[100px] cursor-pointer">
+                    </button>
+                </div>
+
+                <div class="relative">
+                    <img src="images/assets/plants/plants_no_found.png" alt="Plant Not Found" class="w-30 absolute left-[-45px]">
+                    <p class="text-xl text-[#E9BB63] font-semibold bg-[#90421B] p-4 pl-20 border-[#6C3112] border-6 rounded-2xl shadow-[inset_0_4px_15px_rgba(0,0,0,0.2)]">No plant was found related to the search</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>

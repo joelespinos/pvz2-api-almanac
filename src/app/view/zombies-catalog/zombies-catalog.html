@@ -3,3 +3,37 @@
     <img src="images/pvz2-api-logo.png" alt="PvZ 2 API Logo" class="w-[230px]">
     <button [routerLink]="['/plants']">View Plants</button>    
 </div>
+
+<input [(ngModel)]="zombieNameSearch" placeholder="Search plant by name..." class="w-70 my-5 bg-white border-3 border-gray-500 px-2 py-1 rounded-2xl shadow-2xl">
+
+<!-- GRID DE CARDS -->
+<div class="w-[80%] my-5 flex flex-wrap gap-10 justify-center">
+
+    @if (areAnyResultsInSearch()) {
+        @for (zombie of filteredZombiesAlmanac(); track $index) {
+            <div [routerLink]="[(zombie.apiName)]" class="relative hover:-translate-y-3 transition-transform duration-400 cursor-pointer">
+
+                <div class="relative w-[250px] h-[310px] bg-[#90421B] border-2 border-[#4C1705] rounded-xl shadow-[inset_0_4px_11px_rgba(0,0,0,0.4)] overflow-hidden">
+                    
+                    <div class="my-5">
+                        
+                        <div class="flex justify-center bg-[#6C3112] mx-5 py-3 border-2 border-[#4C1705] rounded-xl shadow-[inset_0_4px_11px_rgba(0,0,0,0.4)]">
+                            <img [src]="zombie.image" [alt]="zombie.name + ' Image'">
+                        </div>
+                        
+                        <h3 class="text-center text-2xl font-semibold my-2 text-[#E9BB63]">{{ zombie.name }}</h3>
+                        
+                        <div class="flex justify-center border-box h-25 bg-[#FCC689] mx-5 py-3 px-2 border-2 border-[#4C1705] rounded-xl line-clamp-1">
+                            <p>{{ zombie.description }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    } @else {
+        <div class="relative">
+            <img src="images/assets/plants/plants_no_found.png" alt="Plant Not Found" class="w-30 absolute left-[-45px]">
+            <p class="text-xl text-[#E9BB63] font-semibold bg-[#90421B] p-4 pl-20 border-[#6C3112] border-6 rounded-2xl shadow-[inset_0_4px_15px_rgba(0,0,0,0.2)]">No results where found related to the search</p>
+        </div>
+    }
+</div>
