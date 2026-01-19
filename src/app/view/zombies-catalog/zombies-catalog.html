@@ -9,25 +9,25 @@
             <img src="images/pvz2-api-logo.png" alt="PvZ 2 API Logo" class="w-70">
             
             <button [routerLink]="['/plants']">
-                <img src="images/assets/zombies_icon.png" alt="Plants Page Icon" class="w-26 min-w-[100px] cursor-pointer">
+                <img src="images/assets/plants_icon.png" alt="Plants Page Icon" class="w-26 min-w-[100px] cursor-pointer">
             </button>    
         </div>
 
         <div class="relative">
             <h2>
-                <img src="images/assets/plants/plants_title.png" alt="Plants title" class="w-60">
+                <img src="images/assets/zombies/zombies_title.png" alt="Plants title" class="w-60">
             </h2>
             
-            <!-- <button (click)="cleanAllFilters()">
-                <img src="images/assets/plants/plants_clean_button.png" alt="Clear Filters Button" class="absolute left-[268px] w-18 cursor-pointer">
-            </button> -->
+            <button (click)="cleanAllFilters()">
+                <img src="images/assets/zombies/zombies_clean_filters.png" alt="Clear Filters Button" class="absolute left-[268px] w-18 cursor-pointer">
+            </button>
         </div>
     
         <!-- CERCADOR -->
         <input [(ngModel)]="zombieNameSearch" placeholder="Search zombie by name..." class="w-70 my-5 bg-white border-3 border-gray-500 px-2 py-1 rounded-2xl shadow-2xl">
         
         <!-- FILTRES -->
-        <div class="flex justify-center items-center gap-x-12 my-5 [&_label]:text-white [&_label]:font-semibold">
+        <div class="flex justify-center items-center gap-x-13 my-5 [&_label]:text-white [&_label]:font-semibold">
 
             <div class="flex gap-4 w-[200px]">
                 <label for="toughness-filter">Toughness</label>
@@ -42,7 +42,7 @@
             <div class="flex gap-4 w-[200px]">
                 <label for="speed-filter">Speed</label>
                 
-                <select [(ngModel)]="speedFilterSelected" id="speed-filter" class="bg-white rounded w-[100px]">
+                <select [(ngModel)]="speedFilterSelected" id="speed-filter" class="bg-white rounded w-fit">
                     @for (filter of speedFilters(); track $index) {
                         <option [value]="filter.value">{{ filter.label }}</option>
                     }
@@ -67,17 +67,17 @@
                 @for (zombie of filteredZombiesAlmanac(); track $index) {
                     <div [routerLink]="[(zombie.apiName)]" class="relative hover:-translate-y-3 transition-transform duration-400 cursor-pointer">
 
-                        <div class="relative w-[250px] h-[310px] bg-[#90421B] border-2 border-[#4C1705] rounded-xl shadow-[inset_0_4px_11px_rgba(0,0,0,0.4)] overflow-hidden">
+                        <div class="relative w-[250px] h-[310px] bg-[#46485b] border-2 border-[#202535] rounded-xl shadow-[inset_0_4px_11px_rgba(0,0,0,0.4)] overflow-hidden">
                             
                             <div class="my-5">
                                 
-                                <div class="flex justify-center bg-[#6C3112] mx-5 py-3 border-2 border-[#4C1705] rounded-xl shadow-[inset_0_4px_11px_rgba(0,0,0,0.4)]">
-                                    <img [src]="zombie.image" [alt]="zombie.name + ' Image'">
+                                <div class="flex justify-center bg-[#202535] mx-5 py-3 border-2 border-[#202535] rounded-xl shadow-[inset_0_4px_11px_rgba(0,0,0,0.4)]">
+                                    <img [src]="zombie.image" [alt]="zombie.name + ' Image'" class="w-[75px]">
                                 </div>
                                 
-                                <h3 class="text-center text-2xl font-semibold my-2 text-[#E9BB63]">{{ zombie.name }}</h3>
+                                <h3 class="text-center text-2xl font-semibold my-2 text-[#656ca3]">{{ zombie.name }}</h3>
                                 
-                                <div class="flex justify-center border-box h-25 bg-[#FCC689] mx-5 py-3 px-2 border-2 border-[#4C1705] rounded-xl line-clamp-1">
+                                <div class="flex justify-center border-box h-25 bg-[#5C5F7D] mx-5 py-3 px-2 border-2 border-[#202535] rounded-xl line-clamp-1">
                                     <p>{{ zombie.description }}</p>
                                 </div>
                             </div>
@@ -86,8 +86,8 @@
                 }
             } @else {
                 <div class="relative">
-                    <img src="images/assets/plants/plants_no_found.png" alt="Plant Not Found" class="w-30 absolute left-[-45px]">
-                    <p class="text-xl text-[#E9BB63] font-semibold bg-[#90421B] p-4 pl-20 border-[#6C3112] border-6 rounded-2xl shadow-[inset_0_4px_15px_rgba(0,0,0,0.2)]">No results where found related to the search</p>
+                    <img src="images/assets/zombies/zombies_no_found.png" alt="Zombie Not Found" class="w-25 absolute left-[-35px] top-[-15px]">
+                    <p class="text-xl text-[#656ca3] font-semibold bg-[#46485b] p-4 pl-20 border-[#202535] border-6 rounded-2xl shadow-[inset_0_4px_15px_rgba(0,0,0,0.2)]">No zombie was found related to the search</p>
                 </div>
             }
         </div>

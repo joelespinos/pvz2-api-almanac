@@ -253,4 +253,10 @@ export class ZombiesManager {
 
     return nextZombieName;
   }
+
+  public cleanAllFilters(): void {
+    this._toughnessFilterSelected.set(DEFAULT_DROPDOWN_FILTER.value);
+    this._speedFilterSelected.set(DEFAULT_DROPDOWN_FILTER.value);
+    this._staminaFilterSelected.set(DEFAULT_DROPDOWN_FILTER.value);
+  }
 }

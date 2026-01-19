@@ -48,4 +48,8 @@ export class ZombiesCatalog {
   public areAnyResultsInSearch(): boolean {
     return this._zombiesManager.areAnyResultsInSearch(this.zombieNameSearch());
   }
+
+  public cleanAllFilters(): void {
+    this._zombiesManager.cleanAllFilters();
+  }
 }
