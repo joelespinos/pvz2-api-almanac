@@ -2,14 +2,12 @@ import { HttpClient } from '@angular/common/http';
 import { computed, effect, inject, Injectable, signal, Signal, WritableSignal } from '@angular/core';
 import { Plant, DEFAULT_PLANT } from '../model/plant';
 import { PlantFamilyFilter, PLANTS_FAMILY_FILTERS, FAMILY_NOT_FOUND } from '../model/plant-family-filter';
+import { API_CONFIG } from '../config/api-config';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PlantsManager {
-  private readonly PUBLIC_URL: string = "https://pvz-2-api.vercel.app"
-  private readonly BASE_URL: string = "/api";
-  private readonly PLANTS_ENDPOINT: string = "/plants"
   private readonly FIRST_ELEMENT: number = 0;                     // Primer element de la llista de noms en el que començarem a fer peticions pels objectes
   private readonly COST_MAX_CHARS: number = 3;                    // El camp de cost sols podra tenir aquest numero de caràcters
   private readonly DEFAULT_SEARCH_VALUE: string = "";
@@ -108,7 +106,9 @@ export class PlantsManager {
 
   private retrievePlantsNames(): void {
 
-    const subscription = this._httpClient.get<string[]>(this.BASE_URL + this.PLANTS_ENDPOINT).subscribe({
+    const subscription = this._httpClient.get<string[]>(API_CONFIG.BASE_URL + API_CONFIG.ENDPOINTS.PLANTS_ENDPOINT, 
+      { headers: API_CONFIG.HEADERS }
+    ).subscribe({
 
       next: (value: any) => {
         this._plantsNames.set(value);
@@ -128,7 +128,9 @@ export class PlantsManager {
 
   private retrievePlantsObjects(numElement: number): void {
     let plantEndPoint = "/" + this._plantsNames()[numElement]; // Fragment de la URL que contindra el nom de la planta a obtenir el objecte
-    let subscription = this._httpClient.get<Plant>(this.BASE_URL + this.PLANTS_ENDPOINT + plantEndPoint).subscribe({
+    let subscription = this._httpClient.get<Plant>(API_CONFIG.BASE_URL + API_CONFIG.ENDPOINTS.PLANTS_ENDPOINT + plantEndPoint,
+      { headers: API_CONFIG.HEADERS }
+    ).subscribe({
 
       next: (value: any) => {
         let plantToAdd = this.parseValueToPlant(value);
@@ -154,7 +156,7 @@ export class PlantsManager {
     let newPlant = this.createDefaultPlant(); // Planta nova a afegir
     
     newPlant.name = value.name;
-    newPlant.image = this.PUBLIC_URL + value.image;
+    newPlant.image = API_CONFIG.PUBLIC_URL + value.image;
     
     if (value.family !== undefined) newPlant.family = value.family;
     else if (value.Family !== undefined) newPlant.family = value.Family;
@@ -229,7 +231,9 @@ export class PlantsManager {
 
     } else {
       let plantEndPoint = "/" + name; // Fragment de la URL que contindra el nom de la planta a obtenir el objecte
-      let subscription = this._httpClient.get<Plant>(this.BASE_URL + this.PLANTS_ENDPOINT + plantEndPoint).subscribe({
+      let subscription = this._httpClient.get<Plant>(API_CONFIG.BASE_URL + API_CONFIG.ENDPOINTS.PLANTS_ENDPOINT + plantEndPoint,
+        { headers: API_CONFIG.HEADERS }
+      ).subscribe({
         
         next: (value: any) => {
           this._selectedPlant.set(this.parseValueToPlant(value));

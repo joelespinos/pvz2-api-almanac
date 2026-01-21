@@ -2,14 +2,12 @@ import { HttpClient } from '@angular/common/http';
 import { computed, effect, inject, Injectable, signal, Signal, WritableSignal } from '@angular/core';
 import { Zombie, DEFAULT_ZOMBIE } from '../model/zombie';
 import { DropDownFilter, DEFAULT_DROPDOWN_FILTER } from '../model/drop-down-filter';
+import { API_CONFIG } from '../config/api-config';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ZombiesManager {
-  private readonly PUBLIC_URL: string = "https://pvz-2-api.vercel.app";
-  private readonly BASE_URL: string = "/api";
-  private readonly ZOMBIES_ENDPOINT: string = "/zombies";
   private readonly FIRST_ELEMENT: number = 0;
   private readonly DEFAULT_SEARCH_VALUE: string = "";
 
@@ -111,7 +109,9 @@ export class ZombiesManager {
 
   private retrieveZombiesNames() {
     
-    const subscription = this._httpClient.get<string[]>(this.BASE_URL + this.ZOMBIES_ENDPOINT).subscribe({
+    const subscription = this._httpClient.get<string[]>(API_CONFIG.BASE_URL + API_CONFIG.ENDPOINTS.ZOMBIES_ENDPOINT,
+      { headers: API_CONFIG.HEADERS }
+    ).subscribe({
 
       next: (value: any) => {
         this._zombiesNames.set(value);
@@ -131,7 +131,9 @@ export class ZombiesManager {
 
   private retrieveZombiesObjects(numElement: number): void {
     let zombieEndPoint = "/" + this._zombiesNames()[numElement];
-    let subscription = this._httpClient.get<Zombie>(this.BASE_URL + this.ZOMBIES_ENDPOINT + zombieEndPoint).subscribe({
+    let subscription = this._httpClient.get<Zombie>(API_CONFIG.BASE_URL + API_CONFIG.ENDPOINTS.ZOMBIES_ENDPOINT + zombieEndPoint,
+      { headers: API_CONFIG.HEADERS }
+    ).subscribe({
       
       next: (value) => {
         let zombieToAdd = this.parseValueToZombie(value);
@@ -157,7 +159,7 @@ export class ZombiesManager {
     let newZombie = this.createDefaultZombie();
 
     newZombie.name = value.name;
-    newZombie.image = this.PUBLIC_URL + value.image;
+    newZombie.image = API_CONFIG.PUBLIC_URL + value.image;
 
     if (value.toughness !== undefined) newZombie.toughness = value.toughness.toString();
     else if (value.Toughness !== undefined) newZombie.toughness = value.Toughness.toString();
@@ -207,7 +209,9 @@ export class ZombiesManager {
     
     } else {
       let zombieEndPoint = "/" + name;
-      let subscription = this._httpClient.get<Zombie>(this.BASE_URL + this.ZOMBIES_ENDPOINT + zombieEndPoint).subscribe({
+      let subscription = this._httpClient.get<Zombie>(API_CONFIG.BASE_URL + API_CONFIG.ENDPOINTS.ZOMBIES_ENDPOINT + zombieEndPoint,
+        { headers: API_CONFIG.HEADERS }
+      ).subscribe({
       
         next: (value) => {
           this._selectedZombie.set(this.parseValueToZombie(value));
