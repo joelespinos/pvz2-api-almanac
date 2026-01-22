@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, InputSignal, Signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, input, InputSignal, Signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ZombiesManager } from '../../service/zombies-manager';
 import { Zombie } from '../../model/zombie';
@@ -8,6 +8,7 @@ import { Zombie } from '../../model/zombie';
   imports: [RouterModule],
   templateUrl: './zombie-detail.html',
   styleUrl: './zombie-detail.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ZombieDetail {
   public apiName: InputSignal<string> = input.required<string>();

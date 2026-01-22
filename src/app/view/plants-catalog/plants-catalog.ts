@@ -1,4 +1,4 @@
-import { Component, inject, signal, Signal, WritableSignal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, Signal, WritableSignal } from '@angular/core';
 import { PlantsManager } from '../../service/plants-manager';
 import { Plant } from '../../model/plant';
 import { RouterModule } from '@angular/router';
@@ -10,6 +10,7 @@ import { PlantFamilyFilter } from '../../model/plant-family-filter';
   imports: [RouterModule, FormsModule],
   templateUrl: './plants-catalog.html',
   styleUrl: './plants-catalog.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PlantsCatalog {
   private readonly MIN_COST_FILTER_VALUE: Signal<string> = signal<string>("0");

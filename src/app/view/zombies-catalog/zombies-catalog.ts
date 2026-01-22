@@ -1,4 +1,4 @@
-import { Component, inject, Signal, WritableSignal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, Signal, WritableSignal } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ZombiesManager } from '../../service/zombies-manager';
 import { Zombie } from '../../model/zombie';
@@ -10,6 +10,7 @@ import { DropDownFilter } from '../../model/drop-down-filter';
   imports: [RouterModule, FormsModule],
   templateUrl: './zombies-catalog.html',
   styleUrl: './zombies-catalog.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ZombiesCatalog {
 

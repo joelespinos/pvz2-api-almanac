@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, InputSignal, Signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, InputSignal, Signal } from '@angular/core';
 import { Plant } from '../../model/plant';
 import { PlantsManager } from '../../service/plants-manager';
 import { RouterModule } from '@angular/router';
@@ -8,6 +8,7 @@ import { RouterModule } from '@angular/router';
   imports: [RouterModule],
   templateUrl: './plant-detail.html',
   styleUrl: './plant-detail.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PlantDetail {
   public apiName: InputSignal<string> = input.required<string>();

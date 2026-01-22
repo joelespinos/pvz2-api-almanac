@@ -25,7 +25,7 @@ export class PlantsManager {
   private _plantNameSearch: WritableSignal<string>;
   private _familyFilter: WritableSignal<string>;                  // Filtre per familia
   private _familyFiltersList: WritableSignal<PlantFamilyFilter[]>;// Objectes de filtratge per familia
-  private _familyFiltersStyles: Signal<string[]>;         // Array de les diferentes class d'estils aplicats als filtres de familia
+  private _familyFiltersStyles: Signal<string[]>;                 // Array de les diferentes class d'estils aplicats als filtres de familia
   private _costFilterValue: WritableSignal<string>;               // Filtre per cost de sol
   private _selectedPlant: WritableSignal<Plant>;                  // Planta seleccionada (Detall)
   private _previousPlant: Signal<string>;                         // Nom de la planta previa a la seleccionada (Detall)

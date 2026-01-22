@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 @Component({
@@ -6,7 +6,6 @@ import { RouterModule } from '@angular/router';
   imports: [RouterModule],
   templateUrl: './page-not-found.html',
   styleUrl: './page-not-found.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PageNotFound {
-
-}
+export class PageNotFound {}
