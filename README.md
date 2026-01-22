@@ -1,59 +1,77 @@
-# Pvz2ApiAlmanac
+# 🌱 Plants vs Zombies API Almanac 🧟
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.2.
+Aplicación web desarrollada con **Angular 20** que consume la **API de Plants vs Zombies 2**. Permite explorar plantas y zombies mediante listados, buscadores, filtros y vistas de detalle, aplicando buenas prácticas modernas de Angular.
 
-## Development server
+---
 
-To start a local development server, run:
+## Descripción general
 
-```bash
-ng serve
-```
+La aplicación está dividida en dos secciones principales: **Plantas** y **Zombies**. En ambas se pueden visualizar listados en forma de **grid de cards**, realizar búsquedas por nombre y acceder a vistas de detalle.
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+La navegación se realiza mediante **Angular Routing tradicional i rutas parametrizadas**.
 
-## Code scaffolding
+---
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Tecnologías utilizadas
 
-```bash
-ng generate component component-name
-```
+- **HTML5**
+- **CSS3**
+- **Tailwind CSS**
+- **Angular 20**
+- **TypeScript**
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+---
 
-```bash
-ng generate --help
-```
+## Arquitectura y enfoque técnico
 
-## Building
+- Aplicación desarrollada **sin Zone.js (Zoneless)**
+- **Change Detection Strategy: OnPush**
+- Uso del **patrón MVC**
+- Routing tradicional de Angular
 
-To build the project run:
+Este enfoque permite una aplicación más **performante**, **predecible** y **fácil de mantener**.
 
-```bash
-ng build
-```
+---
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## Sección Plantas
 
-## Running unit tests
+### Funcionalidades
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+- Visualización de todas las plantas en un **grid de cards**
+- **Buscador por nombre**
+- Filtros por:
+  - Coste de soles
+  - Familia
+- Acceso al **detalle de cada planta** al hacer click en una card
 
-```bash
-ng test
-```
+### Detalle de planta
 
-## Running end-to-end tests
+La vista de detalle muestra la información completa de la planta obtenida desde la API.
 
-For end-to-end (e2e) testing, run:
+---
 
-```bash
-ng e2e
-```
+## Sección Zombies
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+### Funcionalidades
 
-## Additional Resources
+- Visualización de zombies en un **grid de cards**
+- **Buscador por nombre**
+- Filtros desplegables por:
+  - Dureza
+  - Velocidad
+  - Stamina
+- Acceso al **detalle de cada zombie**
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+### Detalle de zombie
+
+- Vista con información detallada del zombie
+- Posibilidad de **navegar entre los detalles de los distintos zombies**
+
+---
+
+## 🌐 API utilizada
+
+La aplicación consume datos de la siguiente API:
+
+👉 **Plants vs Zombies 2 API**  
+https://pvz-2-api.vercel.app/docs
